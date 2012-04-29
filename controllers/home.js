@@ -1,8 +1,15 @@
 var express = require('express');
 var fs = require('fs'),
-	crypto = require('crypto');
+	crypto = require('crypto'),
+	knox = require('knox');
 
 var app = module.exports = express.createServer();
+
+var client = knox.createClient({
+    key: 'AKIAJJ52UTWQHJPMFFDA'
+  , secret: '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'
+  , bucket: 'soraapp'
+});
 
 app.get('/', function (req, res, next) {
 	res.end('hello world');
@@ -18,25 +25,29 @@ app.get('/api/upload', function(req, res){
 });
 
 app.post('/api/upload', function(req, res, next){
-	if(!req.files) throw new Error("no files");
+	if(!req.files) next(new Error("No files."));
 
-	console.log(req.files);
-	//saves files
-	fs.readFile(req.files.image.path, function (err, data) {
-		if(err) next(err);
-		var file_name = crypto.createHash('md5').digest("hex");
-	  	var newPath = __dirname + "/../uploads/" + file_name + ".jpg";
-	  	
 
-	  	fs.writeFile(newPath, data, function (err) {
-	  		console.log("saving file");
-	  		if(err) next(err);
-	  		//process image data
-	  		//save to db
-	  		//send back image data and 201 status code
-	    	res.send("success",201);
-	  	});
+	//get magic json object from image processing
+	fs.readFile(req.files.image.path, function(err, buf){
+		var file_name = crypto.createHash('md5').digest("hex") + ".jpg";
+
+		var req = client.put(file_name, {
+			'Content-Length': buf.length
+			, 'Content-Type': 'image/jpg'
+		});
+
+		req.on('response', function(res){
+			if (200 == res.statusCode) {
+		  		console.log('saved to %s', req.url);
+
+		  		//save json object and image url to db
+			}
+		});
+
+		req.end(buf);
 	});
+
 
 
 });
