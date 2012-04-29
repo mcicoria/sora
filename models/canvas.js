@@ -18,7 +18,7 @@ function createImage(path, callback) {
   var options = {
     host: 'soraapp.s3.amazonaws.com',
     port: 80,
-    path: '/f6f4a250f742ec3fc1eca4237174e2b3.jpg',
+    path: '/' + path,
     method: 'GET'
   };
 
