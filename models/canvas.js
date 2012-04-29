@@ -32,8 +32,9 @@ function pixelMapping(image, callback) {
     // Get the image data
 
     var gridData = [];
-    var WIDTH_NUMS = 2;
-    var HEIGHT_NUMS = 2;
+    var nums = 16;
+    var WIDTH_NUMS = nums;
+    var HEIGHT_NUMS = nums;
 
     var currentX = 0;
     var currentY = 0;
@@ -41,7 +42,6 @@ function pixelMapping(image, callback) {
     var gridHeight = image.height/HEIGHT_NUMS;
     var endX = 0;
     var endY = 0;
-
 
     for(var k = 0; k < WIDTH_NUMS; k++){
       for(var l = 0; l < HEIGHT_NUMS; l++){
@@ -88,18 +88,20 @@ function pixelMapping(image, callback) {
 }
 
 function getReturnJSON(mappings, callback) {
-    console.log('in getReturn');
     var rval = new Array();
 
     var barData = {};
     var currentBar = 1;
     for(var i=0; i<mappings.length; i++) {
         var box = mappings[i];
-        if(barData.colors==null){
-            barData.colors = new Array();
-        }
 
-        barData.colors.push(Can.getColor(box.r,box.g,box.b));
+        var color = Can.getColor(box.r,box.g,box.b);
+        if(barData[color]==null) {
+            barData[color] = 1;
+        }
+        else {
+            barData[color] = barData[color]+1;
+        }
 
         if(i==mappings.length-1 || currentBar != mappings[i+1].bar) {
             rval.push(barData);
@@ -108,14 +110,11 @@ function getReturnJSON(mappings, callback) {
         }
 
     }
-    console.log('getReturnJSON');
-
     callback(null, rval);
 }
 
 
 function getColor(r,g,b) {
-    console.log('in getColor');
     var colorMappings = [
         {"color":"red","rgb":[255,0,0]},
         {"color":"yellow","rgb":[255,255,0]},
@@ -123,24 +122,18 @@ function getColor(r,g,b) {
         {"color":"green","rgb":[0,255,0]},
         {"color":"blue","rgb":[0,0,255]},
         {"color":"white","rgb":[255,255,255]},
-        {"color":"black","rgb":[0,0,0]}
+        //{"color":"black","rgb":[0,0,0]}
     ];
     var best = 255*3;
     var color;
 
-    //console.log("====RUNNING====");
     for(var i=0; i<colorMappings.length; i++) {
         var rgb = colorMappings[i].rgb;
         var sum = Math.abs(rgb[0] - r) + Math.abs(rgb[1] - g) + Math.abs(rgb[2] - b);
-        //console.log("with: "+colorMappings[i].color);
-        //console.log("sum: "+sum);
-        //console.log("best: "+best);
         if(sum < best) {
             best = sum;
             color = colorMappings[i].color;
         }
     }
-    //console.log("rgb:"+r+","+g+","+b);
-    //console.log("color:"+color);
     return color;
 }
