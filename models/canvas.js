@@ -8,6 +8,8 @@ var Can = exports;
 
 exports.createImage = createImage;
 exports.pixelMapping = pixelMapping;
+exports.getReturnJSON = getReturnJSON;
+exports.getColor = getColor;
 
 function createImage(path, callback) {
   var img = new Image;
@@ -81,6 +83,64 @@ function pixelMapping(image, callback) {
         gridData.push(box);
       }
     }
-   
-    callback(null, gridData);
-  }
+
+   Can.getReturnJSON(gridData, callback);
+}
+
+function getReturnJSON(mappings, callback) {
+    console.log('in getReturn');
+    var rval = new Array();
+
+    var barData = {};
+    var currentBar = 1;
+    for(var i=0; i<mappings.length; i++) {
+        var box = mappings[i];
+        if(barData.colors==null){
+            barData.colors = new Array();
+        }
+
+        barData.colors.push(Can.getColor(box.r,box.g,box.b));
+
+        if(i==mappings.length-1 || currentBar != mappings[i+1].bar) {
+            rval.push(barData);
+            barData = {};
+            currentBar += 1;
+        }
+
+    }
+    console.log('getReturnJSON');
+
+    callback(null, rval);
+}
+
+
+function getColor(r,g,b) {
+    console.log('in getColor');
+    var colorMappings = [
+        {"color":"red","rgb":[255,0,0]},
+        {"color":"yellow","rgb":[255,255,0]},
+        {"color":"purple","rgb":[255,0,255]},
+        {"color":"green","rgb":[0,255,0]},
+        {"color":"blue","rgb":[0,0,255]},
+        {"color":"white","rgb":[255,255,255]},
+        {"color":"black","rgb":[0,0,0]}
+    ];
+    var best = 255*3;
+    var color;
+
+    //console.log("====RUNNING====");
+    for(var i=0; i<colorMappings.length; i++) {
+        var rgb = colorMappings[i].rgb;
+        var sum = Math.abs(rgb[0] - r) + Math.abs(rgb[1] - g) + Math.abs(rgb[2] - b);
+        //console.log("with: "+colorMappings[i].color);
+        //console.log("sum: "+sum);
+        //console.log("best: "+best);
+        if(sum < best) {
+            best = sum;
+            color = colorMappings[i].color;
+        }
+    }
+    //console.log("rgb:"+r+","+g+","+b);
+    //console.log("color:"+color);
+    return color;
+}
