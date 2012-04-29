@@ -2,18 +2,28 @@
 var Canvas = require('canvas'),
 	Image = Canvas.Image
   , canvas = new Canvas(200,200)
-  , ctx = canvas.getContext('2d');
+  , ctx = canvas.getContext('2d')
+  , http = require('http');
 
 var img = new Image;
-img.src = 'http://ecx.images-amazon.com/images/I/513olkyC5KL._SL500_AA300_.jpg';
 
-pixelMapping(img);
+img.onload = function(){
+    pixelMapping(img);
+}
+
+img.onerror = function(err){
+  throw err;
+};
+
+img.src = __dirname + '/public/images/ipad_hero.jpg';
 
 function pixelMapping(image) {
 		var width = image.width
     , height = image.height
     , canvas = new Canvas(width, height)
     , ctx = canvas.getContext('2d');
+
+
 
 	  ctx.drawImage(image, 0, 0, width, height);
  
