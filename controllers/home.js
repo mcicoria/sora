@@ -24,13 +24,16 @@ app.get('/api/upload', function(req, res){
     + '</form>');
 });
 
-app.post('/api/upload', function(req, res, next){
+app.post('/api/upload', function(req, p_res, next){
 	if(!req.files) next(new Error("No files."));
 
+	req.connection.setTimeout(30000);
 
 	//get magic json object from image processing
 	fs.readFile(req.files.image.path, function(err, buf){
-		var file_name = crypto.createHash('md5').digest("hex") + ".jpg";
+		var file_name = crypto.createHash('md5')
+						.update("" + (new Date()).getTime())
+						.digest("hex") + ".jpg";
 
 		var req = client.put(file_name, {
 			'Content-Length': buf.length
@@ -40,14 +43,12 @@ app.post('/api/upload', function(req, res, next){
 		req.on('response', function(res){
 			if (200 == res.statusCode) {
 		  		console.log('saved to %s', req.url);
-
+	  			p_res.send("success: " + req.url,201);
 		  		//save json object and image url to db
 			}
 		});
 
 		req.end(buf);
 	});
-
-
 
 });
