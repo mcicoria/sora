@@ -27,6 +27,7 @@ app.get('/api/upload', function(req, res){
 app.post('/api/upload', function(req, p_res, next){
 	if(!req.files) next(new Error("No files."));
 
+	console.log(req.files);
 	req.connection.setTimeout(30000);
 
 	//get magic json object from image processing
