@@ -12,6 +12,7 @@ exports.createImage = createImage;
 exports.pixelMapping = pixelMapping;
 exports.getReturnJSON = getReturnJSON;
 exports.getColor = getColor;
+exports.numBeat = 16;
 
 function createImage(path, callback) {
   var options = {
@@ -58,8 +59,8 @@ function pixelMapping(imagePath, callback) {
     // Get the image data
 
     var gridData = [];
-    var WIDTH_NUMS = 2;
-    var HEIGHT_NUMS = 2;
+    var WIDTH_NUMS = Can.numBeat;
+    var HEIGHT_NUMS = Can.numBeat;
 
     var currentX = 0;
     var currentY = 0;
@@ -67,7 +68,6 @@ function pixelMapping(imagePath, callback) {
     var gridHeight = image.height/HEIGHT_NUMS;
     var endX = 0;
     var endY = 0;
-
 
     for(var k = 0; k < WIDTH_NUMS; k++){
       for(var l = 0; l < HEIGHT_NUMS; l++){
@@ -104,11 +104,13 @@ function pixelMapping(imagePath, callback) {
         box.r = r/count;
         box.g = g/count;
         box.b = b/count;
-        box.bar = k+1;
+        box.beat = k+1;
 
         gridData.push(box);
       }
     }
+
+    console.log(gridData);
 
    Can.getReturnJSON(gridData, callback);
  };
@@ -118,25 +120,44 @@ function pixelMapping(imagePath, callback) {
 
 function getReturnJSON(mappings, callback) {
     var rval = new Array();
-
-    var barData = {};
+    var barData = new Array();
+    var beatData = {};
     var currentBar = 1;
+    var currentBeat = 1;
+    var beatsPerBar = 4;
+
     for(var i=0; i<mappings.length; i++) {
+        console.log("i:"+i);
         var box = mappings[i];
-        if(barData.colors==null){
-            barData.colors = new Array();
+
+        var color = Can.getColor(box.r,box.g,box.b);
+        if(beatData[color]==null) {
+            beatData[color] = 1;
+        }
+        else {
+            beatData[color] = beatData[color]+1;
         }
 
-        barData.colors.push(Can.getColor(box.r,box.g,box.b));
+        if(i==mappings.length-1 || currentBeat != mappings[i+1].beat) {
+            console.log("PUSHIN beat");
+            barData.push(beatData);
+            beatData = {};
+            currentBeat += 1;
+        }
 
-        if(i==mappings.length-1 || currentBar != mappings[i+1].bar) {
+        // need to multipley
+        console.log("i+1: "+(i+1));
+        console.log("multiply: "+(beatsPerBar*Can.numBeat));
+        console.log("mod: "+((i+1) % (beatsPerBar*Can.numBeat)));
+        if(i==mappings.length-1 || ((i+1) % (beatsPerBar*Can.numBeat)) == 0)  {
+            console.log("PUSHING BAR");
             rval.push(barData);
-            barData = {};
-            currentBar += 1;
+            barData = new Array(); 
+            currentBar +=1;
         }
-
     }
 
+    console.log(rval);
     callback(null, rval);
 }
 
@@ -149,24 +170,18 @@ function getColor(r,g,b) {
         {"color":"green","rgb":[0,255,0]},
         {"color":"blue","rgb":[0,0,255]},
         {"color":"white","rgb":[255,255,255]},
-        {"color":"black","rgb":[0,0,0]}
+        //{"color":"black","rgb":[0,0,0]}
     ];
     var best = 255*3;
     var color;
 
-    //console.log("====RUNNING====");
     for(var i=0; i<colorMappings.length; i++) {
         var rgb = colorMappings[i].rgb;
         var sum = Math.abs(rgb[0] - r) + Math.abs(rgb[1] - g) + Math.abs(rgb[2] - b);
-        //console.log("with: "+colorMappings[i].color);
-        //console.log("sum: "+sum);
-        //console.log("best: "+best);
         if(sum < best) {
             best = sum;
             color = colorMappings[i].color;
         }
     }
-    //console.log("rgb:"+r+","+g+","+b);
-    //console.log("color:"+color);
     return color;
 }
