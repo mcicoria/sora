@@ -5,37 +5,23 @@ var Canvas = require('canvas'),
   , ctx = canvas.getContext('2d');
 
 var img = new Image;
-img.src = __dirname + '/public/images/dice.png';
+img.src = __dirname + '/public/images/ipad_hero.jpg';
 
-// console.log('Resized and saved in %dms');
-// img.onload = function(){
-// 	console.log('Resized and saved in buffer');
-	// try {
 pixelMapping(img);
-// 	} catch(e){
-//     console.log(sys.inspect(e));
-//   }
-// };
-
-// img.onerror = function (err) {
-// 	console.log("error: ", err);
-// };
 
 function pixelMapping(image) {
-		console.log('in pixelMapping');
 		var width = image.width
     , height = image.height
     , canvas = new Canvas(width, height)
     , ctx = canvas.getContext('2d');
 
 	  ctx.drawImage(image, 0, 0, width, height);
-	  console.log("CTX", ctx)
  
     // Get the image data
 
     var gridData = [];
-    var WIDTH_NUMS = 2;
-    var HEIGHT_NUMS = 3;
+    var WIDTH_NUMS = 6;
+    var HEIGHT_NUMS = 6;
 
     var currentX = 0;
     var currentY = 0;
