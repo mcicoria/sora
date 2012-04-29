@@ -1,6 +1,5 @@
 //Modules
 var express = require('express')
-  , routes = require('./routes')
   , port = 3000
   , mongo_url = 'mongodb://localhost/sora';
 
@@ -10,12 +9,6 @@ GLOBAL.mongoose = require("mongoose");
 //Load enviroment settings if available
 if(process.env.MONGOHQ_URL) mongo_url = process.env.MONGOHQ_URL;
 if(process.env.PORT) port = process.env.PORT;
-
-/*
- * Module dependencies.	
- */
-var express = require('express'),
-		routes = require('./routes');
 
 var app = module.exports = express.createServer();
 
@@ -39,6 +32,7 @@ app.configure('production', function(){
 
 app.listen(port);
 app.use(require('./controllers/canvas'));
+app.use(require('./controllers/upload'));
 app.use(require('./controllers/home'));
 
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
