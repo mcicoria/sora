@@ -5,7 +5,7 @@ var Canvas = require('canvas'),
   , ctx = canvas.getContext('2d');
 
 var img = new Image;
-img.src = __dirname + '/public/images/ipad_hero.jpg';
+img.src = 'http://ecx.images-amazon.com/images/I/513olkyC5KL._SL500_AA300_.jpg';
 
 pixelMapping(img);
 
