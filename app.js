@@ -15,7 +15,7 @@ img.onerror = function(err){
   throw err;
 };
 
-img.src = __dirname + '/public/images/ipad_hero.jpg';
+img.src = './public/images/ipad_hero.jpg';
 
 function pixelMapping(image) {
 		var width = image.width
