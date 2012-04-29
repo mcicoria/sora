@@ -15,17 +15,17 @@ img.onerror = function(err){
   throw err;
 };
 
-img.src = './public/images/ipad_hero.jpg';
+//img.src = __dirname + 'public/images/ipad_hero.jpg';
+
+img.src = __dirname + 'public/images/ipad_hero.jpg';
 
 function pixelMapping(image) {
-		var width = image.width
+	var width = image.width
     , height = image.height
     , canvas = new Canvas(width, height)
     , ctx = canvas.getContext('2d');
 
-
-
-	  ctx.drawImage(image, 0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
  
     // Get the image data
 
@@ -81,3 +81,65 @@ function pixelMapping(image) {
    
     console.log(gridData);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //app.js
+
+  /**
+ * Module dependencies.
+ */
+
+var express = require('express')
+  , routes = require('./routes')
+  , port = 3000
+  , mongo_url = 'mongodb://localhost/sora';
+
+GLOBAL.mu = require("mu2");
+GLOBAL.mongoose = require("mongoose");
+
+//Load enviroment settings if available
+if(process.env.MONGOHQ_URL) mongo_url = process.env.MONGOHQ_URL;
+if(process.env.PORT) port = process.env.PORT;
+
+var app = module.exports = express.createServer();
+
+// Configuration
+
+app.configure(function(){
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
+});
+
+app.configure('development', function(){
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('production', function(){
+  app.use(express.errorHandler());
+});
+
+// Routes
+
+// app.get('/', routes.index);
+app.use(require('./controllers/home'));
+
+app.listen(port);
+console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
