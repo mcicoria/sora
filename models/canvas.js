@@ -2,7 +2,9 @@ var Canvas = require('canvas'),
     Image = Canvas.Image,
     canvas = new Canvas(200,200),
     ctx = canvas.getContext('2d'),
-    fs = require('fs');
+    fs = require('fs'),
+    request = require('request'),
+    http = require('http');
 
 var Can = exports;
 
@@ -12,22 +14,46 @@ exports.getReturnJSON = getReturnJSON;
 exports.getColor = getColor;
 
 function createImage(path, callback) {
-  var img = new Image;
-
-  img.onload = function () {
-    Can.pixelMapping(img, callback);
+  var options = {
+    host: 'soraapp.s3.amazonaws.com',
+    port: 80,
+    path: '/f6f4a250f742ec3fc1eca4237174e2b3.jpg',
+    method: 'GET'
   };
 
-  img.src = path;
+var request = http.get(options, function(res){
+    var imagedata = ''
+    res.setEncoding('binary')
+
+    res.on('data', function(chunk){
+        imagedata += chunk
+    })
+
+    res.on('end', function(){
+        var filePath = __dirname + '/../public/images/' + options.path;
+
+        fs.writeFile(filePath, imagedata, 'binary', function(err){
+            if (err) throw err
+        
+            pixelMapping(filePath, callback);
+        })
+    })
+
+})
+  
 }
 
-function pixelMapping(image, callback) {
-		var width = image.width,
+function pixelMapping(imagePath, callback) {
+  var image = new Image;
+  
+    
+  image.onload = function () {
+    var width = image.width,
         height = image.height,
         canvas = new Canvas(width, height),
         ctx = canvas.getContext('2d');
 
-	  ctx.drawImage(image, 0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
  
     // Get the image data
 
@@ -52,8 +78,8 @@ function pixelMapping(image, callback) {
         endY = ((l+1)*gridHeight);
 
         var box = {};
-        		box.x = {};
-        		box.y = {};
+            box.x = {};
+            box.y = {};
 
         box.x.start = currentX;
         box.x.end = endX;
@@ -85,10 +111,12 @@ function pixelMapping(image, callback) {
     }
 
    Can.getReturnJSON(gridData, callback);
+ };
+
+ image.src = imagePath;
 }
 
 function getReturnJSON(mappings, callback) {
-    console.log('in getReturn');
     var rval = new Array();
 
     var barData = {};
@@ -108,14 +136,12 @@ function getReturnJSON(mappings, callback) {
         }
 
     }
-    console.log('getReturnJSON');
 
     callback(null, rval);
 }
 
 
 function getColor(r,g,b) {
-    console.log('in getColor');
     var colorMappings = [
         {"color":"red","rgb":[255,0,0]},
         {"color":"yellow","rgb":[255,255,0]},
