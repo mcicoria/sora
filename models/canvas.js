@@ -10,6 +10,7 @@ exports.createImage = createImage;
 exports.pixelMapping = pixelMapping;
 exports.getReturnJSON = getReturnJSON;
 exports.getColor = getColor;
+exports.numBeat = 16;
 
 function createImage(path, callback) {
   var img = new Image;
@@ -32,9 +33,8 @@ function pixelMapping(image, callback) {
     // Get the image data
 
     var gridData = [];
-    var nums = 16;
-    var WIDTH_NUMS = nums;
-    var HEIGHT_NUMS = nums;
+    var WIDTH_NUMS = Can.numBeat;
+    var HEIGHT_NUMS = Can.numBeat;
 
     var currentX = 0;
     var currentY = 0;
@@ -78,38 +78,57 @@ function pixelMapping(image, callback) {
         box.r = r/count;
         box.g = g/count;
         box.b = b/count;
-        box.bar = k+1;
+        box.beat = k+1;
 
         gridData.push(box);
       }
     }
+
+    console.log(gridData);
 
    Can.getReturnJSON(gridData, callback);
 }
 
 function getReturnJSON(mappings, callback) {
     var rval = new Array();
-
-    var barData = {};
+    var barData = new Array();
+    var beatData = {};
     var currentBar = 1;
+    var currentBeat = 1;
+    var beatsPerBar = 4;
+
     for(var i=0; i<mappings.length; i++) {
+        console.log("i:"+i);
         var box = mappings[i];
 
         var color = Can.getColor(box.r,box.g,box.b);
-        if(barData[color]==null) {
-            barData[color] = 1;
+        if(beatData[color]==null) {
+            beatData[color] = 1;
         }
         else {
-            barData[color] = barData[color]+1;
+            beatData[color] = beatData[color]+1;
         }
 
-        if(i==mappings.length-1 || currentBar != mappings[i+1].bar) {
+        if(i==mappings.length-1 || currentBeat != mappings[i+1].beat) {
+            console.log("PUSHIN beat");
+            barData.push(beatData);
+            beatData = {};
+            currentBeat += 1;
+        }
+
+        // need to multipley
+        console.log("i+1: "+(i+1));
+        console.log("multiply: "+(beatsPerBar*Can.numBeat));
+        console.log("mod: "+((i+1) % (beatsPerBar*Can.numBeat)));
+        if(i==mappings.length-1 || ((i+1) % (beatsPerBar*Can.numBeat)) == 0)  {
+            console.log("PUSHING BAR");
             rval.push(barData);
-            barData = {};
-            currentBar += 1;
+            barData = new Array(); 
+            currentBar +=1;
         }
-
     }
+
+    console.log(rval);
     callback(null, rval);
 }
 
