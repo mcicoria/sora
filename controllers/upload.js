@@ -2,9 +2,8 @@ var express = require('express'),
  	fs = require('fs'),
 	crypto = require('crypto'),
 	knox = require('knox'), 
-	http = require('http'), 
-	multipart = require('multipart'),
-	sys = require('sys');
+	http = require('http');
+
 
 var app = module.exports = express.createServer();
 
@@ -22,7 +21,7 @@ app.get('/api/upload', function(req, res){
     + '</form>');
 });
 
-app.post('/api/upload/old', function(req, p_res, next){
+app.post('/api/upload', function(req, p_res, next){
 	if(!req.files) next(new Error("No files."));
 
 	console.log(req.files);
