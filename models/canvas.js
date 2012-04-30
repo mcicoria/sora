@@ -15,6 +15,7 @@ exports.getColor = getColor;
 exports.numBeat = 16;
 
 function createImage(path, callback) {
+  console.log('createImage')
   var options = {
     host: 'soraapp.s3.amazonaws.com',
     port: 80,
@@ -23,6 +24,7 @@ function createImage(path, callback) {
   };
 
 var request = http.get(options, function(res){
+    console.log('request')
     var imagedata = ''
     res.setEncoding('binary')
 
@@ -45,6 +47,7 @@ var request = http.get(options, function(res){
 }
 
 function pixelMapping(imagePath, callback) {
+  console.log('pixelMapping')
   var image = new Image;
   
     
