@@ -15,7 +15,6 @@ exports.getColor = getColor;
 exports.numBeat = 16;
 
 function createImage(path, callback) {
-  console.log('createImage')
   var options = {
     host: 'soraapp.s3.amazonaws.com',
     port: 80,
@@ -24,7 +23,6 @@ function createImage(path, callback) {
   };
 
 var request = http.get(options, function(res){
-    console.log('request')
     var imagedata = ''
     res.setEncoding('binary')
 
@@ -51,15 +49,12 @@ function pixelMapping(imagePath, callback) {
   
 
   image.onload = function () {
-    console.log('inonload');
     var width = image.width,
         height = image.height,
         canvas = new Canvas(width, height),
         ctx = canvas.getContext('2d');
 
-console.log(image);
     ctx.drawImage(image, 0, 0, width, height);
-    console.log('after ctx');
  
     // Get the image data
 
@@ -132,7 +127,6 @@ function getReturnJSON(mappings, callback) {
     var beatsPerBar = 4;
 
     for(var i=0; i<mappings.length; i++) {
-        console.log("i:"+i);
         var box = mappings[i];
 
         var color = Can.getColor(box.r,box.g,box.b);
@@ -144,18 +138,13 @@ function getReturnJSON(mappings, callback) {
         }
 
         if(i==mappings.length-1 || currentBeat != mappings[i+1].beat) {
-            console.log("PUSHIN beat");
             barData.push(beatData);
             beatData = {};
             currentBeat += 1;
         }
 
         // need to multipley
-        console.log("i+1: "+(i+1));
-        console.log("multiply: "+(beatsPerBar*Can.numBeat));
-        console.log("mod: "+((i+1) % (beatsPerBar*Can.numBeat)));
         if(i==mappings.length-1 || ((i+1) % (beatsPerBar*Can.numBeat)) == 0)  {
-            console.log("PUSHING BAR");
             rval.push(barData);
             barData = new Array(); 
             currentBar +=1;
