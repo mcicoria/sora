@@ -9,7 +9,7 @@
       "express": "2.5.8"
     , "jade": ">= 0.0.1"
     , "imagemagick": "0.1.2"
-    , "canvas": "git://github.com/elspoono/node-canvas-heroku.git#master"
+    , "canvas": "https://github.com/elspoono/node-canvas/tarball/master"
     , "mongoose": ">= 2.5.10"
     , "mu2": ">= 0.5.13"
     , "knox": ">= 0.0.9"
