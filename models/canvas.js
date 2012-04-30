@@ -33,7 +33,7 @@ var request = http.get(options, function(res){
     })
 
     res.on('end', function(){
-        var filePath = __dirname + '/../public/images/' + options.path;
+        var filePath = __dirname + '/../public/images' + options.path;
 
         fs.writeFile(filePath, imagedata, 'binary', function(err){
             if (err) throw err
@@ -47,11 +47,10 @@ var request = http.get(options, function(res){
 }
 
 function pixelMapping(imagePath, callback) {
-  console.log('pixelMapping')
   var image = new Image;
   
-    
   image.onload = function () {
+    console.log('inonload');
     var width = image.width,
         height = image.height,
         canvas = new Canvas(width, height),
