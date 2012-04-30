@@ -49,6 +49,7 @@ var request = http.get(options, function(res){
 function pixelMapping(imagePath, callback) {
   var image = new Image;
   
+
   image.onload = function () {
     console.log('inonload');
     var width = image.width,
@@ -56,7 +57,9 @@ function pixelMapping(imagePath, callback) {
         canvas = new Canvas(width, height),
         ctx = canvas.getContext('2d');
 
+console.log(image);
     ctx.drawImage(image, 0, 0, width, height);
+    console.log('after ctx');
  
     // Get the image data
 
@@ -112,7 +115,7 @@ function pixelMapping(imagePath, callback) {
       }
     }
 
-    console.log(gridData);
+    // console.log(gridData);
 
    Can.getReturnJSON(gridData, callback);
  };
@@ -159,7 +162,7 @@ function getReturnJSON(mappings, callback) {
         }
     }
 
-    console.log(rval);
+    // console.log(rval);
     callback(null, rval);
 }
 
